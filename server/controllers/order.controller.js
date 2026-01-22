@@ -145,14 +145,12 @@ const getOrderProductItems = async({
     return productList
 }
 
-//http://localhost:8080/api/order/webhook
 export async function webhookStripe(request,response){
     const event = request.body;
     const endPointSecret = process.env.STRIPE_ENPOINT_WEBHOOK_SECRET_KEY
 
     console.log("event",event)
 
-    // Handle the event
   switch (event.type) {
     case 'checkout.session.completed':
       const session = event.data.object;
@@ -181,15 +179,13 @@ export async function webhookStripe(request,response){
       console.log(`Unhandled event type ${event.type}`);
   }
 
-  // Return a response to acknowledge receipt of the event
   response.json({received: true});
 }
 
 
 export async function getOrderDetailsController(request,response){
     try {
-        const userId = request.userId // order id
-
+        const userId = request.userId 
         const orderlist = await OrderModel.find({ userId : userId }).sort({ createdAt : -1 }).populate('delivery_address')
 
         return response.json({

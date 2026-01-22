@@ -5,11 +5,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Name is required"]
     },
-    username: {
-        type: String,
-        required: [true, "Username is required"],
-        unique: true
-    },
+
     email: {
         type: String,
         required: [true, "Email is required"],
@@ -27,7 +23,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    refreshTokens: {
+    refresh_Tokens: {
         type: String,
         default: ""
     },
@@ -35,7 +31,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    last_login: {
+    last_login_date: {
         type: Date,
         default: ''
     },
@@ -79,8 +75,6 @@ const userSchema = new mongoose.Schema({
         enum: ['USER', 'ADMIN'],
         default: 'USER'
     },
-
-
 
 },
 

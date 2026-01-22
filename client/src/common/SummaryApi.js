@@ -14,7 +14,7 @@ const SummaryApi = {
         method : 'put'
     },
     forgot_password_otp_verification : {
-        url : 'api/user/verify-forgot-password-otp',
+        url : '/api/user/verify-forgot-password-otp',
         method : 'put'
     },
     resetPassword : {
@@ -22,7 +22,7 @@ const SummaryApi = {
         method : 'put'
     },
     refreshToken : {
-        url : 'api/user/refresh-token',
+        url : '/api/user/refresh-token',
         method : 'post'
     },
     userDetails : {
@@ -67,7 +67,7 @@ const SummaryApi = {
     },
     getSubCategory : {
         url : '/api/subcategory/get',
-        method : 'post'
+        method : 'get'
     },
     updateSubCategory : {
         url : '/api/subcategory/update',
@@ -83,7 +83,7 @@ const SummaryApi = {
     },
     getProduct : {
         url : '/api/product/get',
-        method : 'post'
+        method : 'get'
     },
     getProductByCategory : {
         url : '/api/product/get-product-by-category',
