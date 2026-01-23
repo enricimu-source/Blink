@@ -3,9 +3,9 @@ import { AddCategoryController, getCategoryController, deleteCategoryController,
 import auth from "../middleware/auth.js";
 const categoryRouter = Router();
 
-categoryRouter.post('/add',auth,AddCategoryController);
-categoryRouter.get('/get',auth,getCategoryController);
+categoryRouter.post('/add-category',auth,AddCategoryController);
+categoryRouter.get('/get',getCategoryController);
 categoryRouter.put('/update',auth,updateCategoryController);
-categoryRouter.delete('/remove',auth,deleteCategoryController);
+categoryRouter.delete('/delete',auth,deleteCategoryController);
 
 export default categoryRouter;

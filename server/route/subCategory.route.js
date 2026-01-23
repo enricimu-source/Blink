@@ -5,8 +5,8 @@ import { AddSubCategoryController, getSubCategoryController, deleteSubCategoryCo
 const subCategoryRouter = Router();
 
 subCategoryRouter.post('/create',auth,AddSubCategoryController);
-subCategoryRouter.get('/get',auth,getSubCategoryController);
+subCategoryRouter.get('/get',getSubCategoryController);
 subCategoryRouter.put('/update',auth,updateSubCategoryController);
-subCategoryRouter.delete('/remove',auth,deleteSubCategoryController);
+subCategoryRouter.delete('/delete',auth,deleteSubCategoryController);
 
 export default subCategoryRouter;

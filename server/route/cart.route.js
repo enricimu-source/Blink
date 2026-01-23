@@ -4,10 +4,10 @@ import auth from "../middleware/auth.js";
 
 const cartRouter = Router();
 
-cartRouter.post('/add',auth,addToCartItemController);
-cartRouter.get('/get',auth,getCartItemController);
-cartRouter.put('/update',auth,updateCartItemQtyController);
-cartRouter.delete('/remove',auth,deleteCartItemQtyController);
+cartRouter.post('/create',auth,addToCartItemController);
+cartRouter.get('/get',getCartItemController);
+cartRouter.put('/update-qty',auth,updateCartItemQtyController);
+cartRouter.delete('/delete-cart-qty',auth,deleteCartItemQtyController);
 
 
 export default cartRouter;
