@@ -1,20 +1,18 @@
 import jwt from "jsonwebtoken";
 
-const auth = async (req, res, next) => {
+const auth = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    const token =
-      authHeader?.startsWith("Bearer ")
-        ? authHeader.split(" ")[1]
-        : null;
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
-        message: "Access token missing",
+        message: "Unauthorized",
         error: true,
         success: false,
       });
     }
+
+    const token = authHeader.split(" ")[1];
 
     const decoded = jwt.verify(
       token,

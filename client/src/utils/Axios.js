@@ -2,7 +2,7 @@ import axios from "axios";
 import SummaryApi, { baseURL } from "../common/SummaryApi";
 
 const Axios = axios.create({
-  baseURL: "http://localhost:8080/",
+  baseURL: "/api",
   withCredentials: true,
 });
 
@@ -24,7 +24,7 @@ Axios.interceptors.request.use(
 
 //extend the life span of access token with
 // the help refresh
-Axios.interceptors.request.use(
+Axios.interceptors.response.use(
   (response) => {
     return response;
   },

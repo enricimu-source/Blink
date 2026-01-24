@@ -102,6 +102,7 @@ export async function verifyEmailController(request,response){
     }
 }
 
+//login controller
 export async function loginController(request,response){
     try {
         const { email , password } = request.body
@@ -152,8 +153,8 @@ export async function loginController(request,response){
 
         const cookiesOption = {
             httpOnly : true,
-            secure : true,
-            sameSite : "None"
+            secure : false,
+            sameSite : "Lax"
         }
         response.cookie('accessToken',accesstoken,cookiesOption)
         response.cookie('refreshToken',refreshToken,cookiesOption)
@@ -177,15 +178,15 @@ export async function loginController(request,response){
     }
 }
 
-//logout 
+//logout controller
 export async function logoutController(request,response){
     try {
-        const userid = request.userId 
+        const userid = request.userId //middleware
 
         const cookiesOption = {
             httpOnly : true,
-            secure : true,
-            sameSite : "None"
+            secure : false,
+            sameSite : "Lax"
         }
 
         response.clearCookie("accessToken",cookiesOption)
@@ -209,10 +210,11 @@ export async function logoutController(request,response){
     }
 }
 
+//upload user avatar
 export async  function uploadAvatar(request,response){
     try {
-        const userId = request.userId 
-        const image = request.file  
+        const userId = request.userId // auth middlware
+        const image = request.file  // multer middleware
 
         const upload = await uploadImageClodinary(image)
         
@@ -239,6 +241,7 @@ export async  function uploadAvatar(request,response){
     }
 }
 
+//update user details
 export async function updateUserDetails(request,response){
     try {
         const userId = request.userId //auth middleware
@@ -275,6 +278,7 @@ export async function updateUserDetails(request,response){
     }
 }
 
+//forgot password not login
 export async function forgotPasswordController(request,response) {
     try {
         const { email } = request.body 
@@ -290,7 +294,7 @@ export async function forgotPasswordController(request,response) {
         }
 
         const otp = generatedOtp()
-        const expireTime = new Date() + 60 * 60 * 1000 
+        const expireTime = new Date() + 60 * 60 * 1000 // 1hr
 
         const update = await UserModel.findByIdAndUpdate(user._id,{
             forgot_password_otp : otp,
@@ -299,7 +303,7 @@ export async function forgotPasswordController(request,response) {
 
         await sendEmail({
             sendTo : email,
-            subject : "Forgot password from Blink",
+            subject : "Forgot password from Binkeyit",
             html : forgotPasswordTemplate({
                 name : user.name,
                 otp : otp
@@ -321,6 +325,7 @@ export async function forgotPasswordController(request,response) {
     }
 }
 
+//verify forgot password otp
 export async function verifyForgotPasswordOtp(request,response){
     try {
         const { email , otp }  = request.body
@@ -361,7 +366,8 @@ export async function verifyForgotPasswordOtp(request,response){
             })
         }
 
-       
+        //if otp is not expired
+        //otp === user.forgot_password_otp
 
         const updateUser = await UserModel.findByIdAndUpdate(user?._id,{
             forgot_password_otp : "",
@@ -383,7 +389,7 @@ export async function verifyForgotPasswordOtp(request,response){
     }
 }
 
-
+//reset the password
 export async function resetpassword(request,response){
     try {
         const { email , newPassword, confirmPassword } = request.body 
@@ -435,10 +441,10 @@ export async function resetpassword(request,response){
 }
 
 
-
+//refresh token controler
 export async function refreshToken(request,response){
     try {
-        const refreshToken = request.cookies.refreshToken || request?.headers?.authorization?.split(" ")[1]  
+        const refreshToken = request.cookies.refreshToken || request?.headers?.authorization?.split(" ")[1]  /// [ Bearer token]
 
         if(!refreshToken){
             return response.status(401).json({
@@ -464,8 +470,8 @@ export async function refreshToken(request,response){
 
         const cookiesOption = {
             httpOnly : true,
-            secure : true,
-            sameSite : "None"
+            secure : false,
+            sameSite : "Lax"
         }
 
         response.cookie('accessToken',newAccessToken,cookiesOption)
@@ -489,7 +495,7 @@ export async function refreshToken(request,response){
     }
 }
 
-
+//get login user details
 export async function userDetails(request,response){
     try {
         const userId  = request.userId
