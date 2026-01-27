@@ -15,8 +15,14 @@ userRouter.put('/forgot-password',forgotPasswordController)
 userRouter.put('/verify-forgot-password-otp',verifyForgotPasswordOtp)
 userRouter.put('/reset-password',resetpassword)
 userRouter.post('/refresh-token',refreshToken)
-router.get("/user-details", (req, res) => {
-  res.json({ success: true, message: "OK" })
-})
+userRouter.get("/user-details", auth, (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      _id: req.userId,
+      name: "Test User",
+    },
+  });
+});
 
 export default userRouter

@@ -148,8 +148,8 @@ export const getProductByCategoryAndSubCategory  = async(request,response)=>{
         }
 
         const query = {
-            category : { $in :categoryId  },
-            subCategory : { $in : subCategoryId }
+            category : { $in : [categoryId]  },
+            subCategory : { $in : [subCategoryId] }
         }
 
         const skip = (page - 1) * limit

@@ -83,7 +83,7 @@ const SummaryApi = {
     },
     getProduct : {
         url : '/product/get',
-        method : 'get'
+        method : 'post'
     },
     getProductByCategory : {
         url : '/product/get-product-by-category',
@@ -137,8 +137,8 @@ const SummaryApi = {
         url : '/address/update',
         method : 'put'
     },
-    disableAddress : {
-        url : '/address/disable',
+    deleteAddress : {
+        url : '/address/delete',
         method : 'delete'
     },
     CashOnDeliveryOrder : {

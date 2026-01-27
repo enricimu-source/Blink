@@ -15,6 +15,15 @@ productRouter.put('/update-product-details',auth,admin,updateProductDetails)
 
 productRouter.delete('/delete-product',auth,admin,deleteProductDetails)
 
-productRouter.post('/search-product',searchProduct)
+productRouter.post("/search-product", async (req, res) => {
+  const { search, page = 1 } = req.body;
+
+  res.json({
+    success: true,
+    page,
+    totalPage: 1,
+    data: [],
+  });
+});
 
 export default productRouter;
