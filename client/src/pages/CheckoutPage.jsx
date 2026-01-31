@@ -54,9 +54,14 @@ const CheckoutPage = () => {
 
   const handleOnlinePayment = async()=>{
     try {
+        if (!addressList[selectAddress]) {
+      toast.error("Please select address")
+      return
+    }
         toast.loading("Loading...")
         const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY
-        const stripePromise = await loadStripe(stripePublicKey)
+        console.log("Stripe key:", stripePublicKey)
+        const stripe = await loadStripe(stripePublicKey)
        
         const response = await Axios({
             ...SummaryApi.payment_url,
@@ -69,8 +74,10 @@ const CheckoutPage = () => {
         })
 
         const { data : responseData } = response
+        console.log("Stripe response:", responseData)
 
-        stripePromise.redirectToCheckout({ sessionId : responseData.id })
+
+        window.location.href = responseData.url
         
         if(fetchCartItem){
           fetchCartItem()
@@ -79,6 +86,7 @@ const CheckoutPage = () => {
           fetchOrder()
         }
     } catch (error) {
+      console.error(error) 
         AxiosToastError(error)
     }
   }
@@ -92,10 +100,11 @@ const CheckoutPage = () => {
             {
               addressList.map((address, index) => {
                 return (
-                  <label htmlFor={"address" + index} className={!address.status && "hidden"}>
+                  <label  key={address._id} htmlFor={"address" + index} className={!address.status ? "hidden" : undefined}
+>
                     <div className='border rounded p-3 flex gap-3 hover:bg-blue-50'>
                       <div>
-                        <input id={"address" + index} type='radio' value={index} onChange={(e) => setSelectAddress(e.target.value)} name='address' />
+                        <input id={"address" + index} type='radio' value={index} onChange={(e) => setSelectAddress(Number(e.target.value))} name='address' />
                       </div>
                       <div>
                         <p>{address.address_line}</p>

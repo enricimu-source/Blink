@@ -93,9 +93,10 @@ export async function paymentController(request,response){
             },
             line_items : line_items,
             success_url : `${process.env.FRONTEND_URL}/success`,
+            
             cancel_url : `${process.env.FRONTEND_URL}/cancel`
         }
-
+            
         const session = await Stripe.checkout.sessions.create(params)
 
         return response.status(200).json(session)
@@ -167,7 +168,9 @@ export async function webhookStripe(request,response){
     
       const order = await OrderModel.insertMany(orderProduct)
 
-        console.log(order)
+        console.log("order", order)
+        console.log("bool", Boolean(order[0]))
+
         if(Boolean(order[0])){
             const removeCartItems = await  UserModel.findByIdAndUpdate(userId,{
                 shopping_cart : []
