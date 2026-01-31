@@ -8,7 +8,6 @@ import mongoose from "mongoose";
     try {
         const userId = request.userId // auth middleware 
         const { list_items, totalAmt, addressId,subTotalAmt } = request.body 
-console.log("fhfgvhg")
         const payload = list_items.map(el => {
             return({
                 userId : userId,
