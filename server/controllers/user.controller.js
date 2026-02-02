@@ -185,7 +185,7 @@ export async function logoutController(request,response){
 
         const cookiesOption = {
             httpOnly : true,
-            secure : false,
+            secure : true,
             sameSite : "none"
         }
 
@@ -470,7 +470,7 @@ export async function refreshToken(request,response){
 
         const cookiesOption = {
             httpOnly : true,
-            secure : false,
+            secure : true,
             sameSite : "none"
         }
 
