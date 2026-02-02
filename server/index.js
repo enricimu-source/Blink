@@ -20,18 +20,12 @@ dotenv.config();
 
 const app = express();
 
+
+// ✅ CORS FIX
 app.use(
   cors({
+    origin: true, // allow all origins safely
     credentials: true,
-    origin: [
-      process.env.FRONTEND_URL,
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:5176",
-      "http://localhost:3000",
-      "https://blink-frontend-git-dev-enricimu-sources-projects.vercel.app"
-    ].filter(Boolean),
   })
 );
 
@@ -44,14 +38,17 @@ app.use(
   })
 );
 
-const PORT = process.env.PORT || 8080;
 
+// ✅ Test route
 app.get("/", (req, res) => {
   res.json({
-    message: `Server is running on port ${PORT}`,
+    success: true,
+    message: "Backend running 🚀",
   });
 });
 
+
+// ✅ API routes
 app.use("/api/user", userRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/file", uploadRouter);
@@ -61,10 +58,19 @@ app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
-  });
-});
+
+// ✅ DB connect
+connectDB();
 
 
+// ✅ Local dev only
+if (process.env.NODE_ENV !== "production") {
+  const PORT = 8080;
+  app.listen(PORT, () =>
+    console.log(`✅ Server running on http://localhost:${PORT}`)
+  );
+}
+
+
+// ✅ Export for Vercel
+export default app;
