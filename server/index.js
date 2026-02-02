@@ -24,7 +24,10 @@ const app = express();
 // ✅ CORS FIX
 app.use(
   cors({
-    origin: true, // allow all origins safely
+    origin: [
+      "http://localhost:5173",
+      "https://blink-frontend-git-dev-enricimu-sources-projects.vercel.app"
+    ],
     credentials: true,
   })
 );
