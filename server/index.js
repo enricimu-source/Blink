@@ -29,6 +29,8 @@ app.use(
       "https://blink-frontend-git-dev-enricimu-sources-projects.vercel.app"
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
