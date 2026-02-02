@@ -21,19 +21,27 @@ dotenv.config();
 const app = express();
 
 
-// ✅ CORS FIX
+// ✅ TRUST PROXY (important for cookies on vercel)
+app.set("trust proxy", 1);
+
+
+// ✅ CORS CONFIG (VERY IMPORTANT)
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://blink-frontend-git-dev-enricimu-sources-projects.vercel.app"
+      "https://blink-frontend-git-dev-enricimu-sources-projects.vercel.app",
+      /\.vercel\.app$/ // allow all vercel previews
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
+
+
+// ✅ MIDDLEWARES
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
@@ -44,7 +52,7 @@ app.use(
 );
 
 
-// ✅ Test route
+// ✅ TEST ROUTE
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -53,7 +61,7 @@ app.get("/", (req, res) => {
 });
 
 
-// ✅ API routes
+// ✅ ROUTES
 app.use("/api/user", userRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/file", uploadRouter);
@@ -64,11 +72,11 @@ app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
 
 
-// ✅ DB connect
+// ✅ DB CONNECT
 connectDB();
 
 
-// ✅ Local dev only
+// ✅ LOCAL DEV
 if (process.env.NODE_ENV !== "production") {
   const PORT = 8080;
   app.listen(PORT, () =>
@@ -77,5 +85,5 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 
-// ✅ Export for Vercel
+// ✅ EXPORT FOR VERCEL
 export default app;
