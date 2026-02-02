@@ -1,1 +1,1 @@
-# Blink Full Stack 
+# Blink Full Stack MERN App
