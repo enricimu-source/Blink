@@ -40,12 +40,11 @@ const CheckoutPage = () => {
               if(fetchOrder){
                 fetchOrder()
               }
-               window.location.href = responseData.url
-              // navigate('/success',{
-              //   state : {
-              //     text : "Order"
-              //   }
-              // })
+              navigate('/success',{
+                state : {
+                  text : "Order"
+                }
+              })
           }
 
       } catch (error) {

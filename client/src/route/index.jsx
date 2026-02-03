@@ -117,7 +117,7 @@ const router = createBrowserRouter([
                 element : <CheckoutPage/>
             },
             {
-                path : "/success",
+                path : "success",
                 element : <Success/>
             },
             {
