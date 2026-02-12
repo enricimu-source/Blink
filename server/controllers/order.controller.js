@@ -1,8 +1,9 @@
-import Stripe from "../config/stripe.js";
+//import Stripe from "../config/stripe.js";
 import CartProductModel from "../models/cartProduct.model.js";
 import OrderModel from "../models/order.model.js";
 import UserModel from "../models/user.model.js";
 import mongoose from "mongoose";
+import Stripe from "stripe";
 
  export async function CashOnDeliveryOrderController(request,response){
     try {
@@ -53,60 +54,60 @@ export const pricewithDiscount = (price,dis = 1)=>{
     return actualPrice
 }
 
-export async function paymentController(request,response){
-    try {
-        const userId = request.userId // auth middleware 
-        const { list_items, totalAmt, addressId,subTotalAmt } = request.body 
 
-        const user = await UserModel.findById(userId)
 
-        const line_items  = list_items.map(item =>{
-            return{
-               price_data : {
-                    currency : 'inr',
-                    product_data : {
-                        name : item.productId.name,
-                        images : item.productId.image,
-                        metadata : {
-                            productId : item.productId._id
-                        }
-                    },
-                    unit_amount : pricewithDiscount(item.productId.price,item.productId.discount) * 100   
-               },
-               adjustable_quantity : {
-                    enabled : true,
-                    minimum : 1
-               },
-               quantity : item.quantity 
-            }
-        })
+export async function paymentController(req, res) {
+  try {
+    const userId = req.userId;
+    const { list_items, addressId } = req.body;
 
-        const params = {
-            submit_type : 'pay',
-            mode : 'payment',
-            payment_method_types : ['card'],
-            customer_email : user.email,
-            metadata : {
-                userId : userId,
-                addressId : addressId
-            },
-            line_items : line_items,
-            success_url : `${process.env.FRONTEND_URL}/success`,
-            
-            cancel_url : `${process.env.FRONTEND_URL}/cancel`
-        }
-            
-        const session = await Stripe.checkout.sessions.create(params)
+    const user = await UserModel.findById(userId);
 
-        return response.status(200).json(session)
+    const line_items = list_items.map(item => ({
+      price_data: {
+        currency: "inr",
+        product_data: {
+          name: item.productId.name,
+          images: [item.productId.image[0]], // must be array
+          metadata: {
+            productId: item.productId._id.toString(),
+          },
+        },
+        unit_amount:
+          pricewithDiscount(
+            item.productId.price,
+            item.productId.discount
+          ) * 100,
+      },
+      quantity: item.quantity,
+    }));
 
-    } catch (error) {
-        return response.status(500).json({
-            message : error.message || error,
-            error : true,
-            success : false
-        })
-    }
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      customer_email: user.email,
+
+      metadata: {
+        userId: userId.toString(),
+        addressId: addressId,
+      },
+
+      line_items,
+
+      success_url: `${process.env.FRONTEND_URL}/success`,
+      cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+    });
+
+    res.json({ url: session.url });
+
+  } catch (error) {
+    console.log("Stripe error:", error);
+
+    res.status(500).json({
+      message: error.message,
+      error: true,
+    });
+  }
 }
 
 
@@ -145,44 +146,53 @@ const getOrderProductItems = async({
     return productList
 }
 
-export async function webhookStripe(request,response){
-    const event = request.body;
-    const endPointSecret = process.env.STRIPE_ENPOINT_WEBHOOK_SECRET_KEY
 
-    console.log("event",event)
 
-  switch (event.type) {
-    case 'checkout.session.completed':
-      const session = event.data.object;
-      const lineItems = await Stripe.checkout.sessions.listLineItems(session.id)
-      const userId = session.metadata.userId
-      const orderProduct = await getOrderProductItems(
-        {
-            lineItems : lineItems,
-            userId : userId,
-            addressId : session.metadata.addressId,
-            paymentId  : session.payment_intent,
-            payment_status : session.payment_status,
-        })
-    
-      const order = await OrderModel.insertMany(orderProduct)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-        console.log("order", order)
-        console.log("bool", Boolean(order[0]))
+export async function webhookStripe(req, res) {
+  const sig = req.headers["stripe-signature"];
 
-        if(Boolean(order[0])){
-            const removeCartItems = await  UserModel.findByIdAndUpdate(userId,{
-                shopping_cart : []
-            })
-            const removeCartProductDB = await CartProductModel.deleteMany({ userId : userId})
-        }
-      break;
-    default:
-      console.log(`Unhandled event type ${event.type}`);
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_ENPOINT_WEBHOOK_SECRET_KEY
+    );
+  } catch (err) {
+    console.log("Webhook signature error:", err.message);
+    return res.sendStatus(400);
   }
 
-  response.json({received: true});
+  console.log("✅ Webhook verified:", event.type);
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
+    const userId = session.metadata?.userId;
+
+    if (!userId) {
+      console.log("❌ No userId in metadata");
+      return res.json({ received: true });
+    }
+
+    console.log("UserId:", userId);
+
+    // Clear cart
+    await UserModel.findByIdAndUpdate(userId, {
+      shopping_cart: [],
+    });
+
+    await CartProductModel.deleteMany({ userId });
+
+    console.log("🛒 Cart cleared!");
+  }
+
+  res.json({ received: true });
 }
+
 
 
 export async function getOrderDetailsController(request,response){
