@@ -26,28 +26,26 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      process.env.FRONTEND_URL,
-       "https://blink-frontend-git-dev-enricimu-sources-projects.vercel.app",
+      "https://blink-frontend-git-dev-enricimu-sources-projects.vercel.app",
       "https://blink-back-git-dev-enricimu-sources-projects.vercel.app",
     ],
     credentials: true,
-  })
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
 );
 
+app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
-/* ✅ STRIPE WEBHOOK FIRST (RAW BODY) */
-app.use(
-  "/api/order/webhook",
-  express.raw({ type: "application/json" })
-);
 
-/* ✅ THEN JSON PARSER */
-app.use(express.json());
+app.get("/", (req, res) => {
+  res.json({ success: true, message: "Backend running 🚀" });
+});
 
-/* ROUTES */
+
 app.use("/api/user", userRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/file", uploadRouter);
@@ -57,13 +55,9 @@ app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
 
-app.get("/", (req, res) => {
-  res.json({ success: true, message: "Backend running 🚀" });
-});
 
 connectDB();
 
-/* LOCAL ONLY */
 if (process.env.NODE_ENV !== "production") {
   const PORT = 8080;
   app.listen(PORT, () =>
