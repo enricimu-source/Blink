@@ -264,48 +264,49 @@ export const deleteProductDetails = async(request,response)=>{
     }
 }
 
-//search product
-export const searchProduct = async(request,response)=>{
-    try {
-        let { search, page , limit } = request.body 
+// search product
+export const searchProduct = async (request, response) => {
+  try {
+    let { searchText, page = 1, limit = 10 } = request.query;
 
-        if(!page){
-            page = 1
+    page = Number(page);
+    limit = Number(limit);
+
+    const query = searchText
+      ? {
+          $text: {
+            $search: searchText,
+          },
         }
-        if(!limit){
-            limit  = 10
-        }
+      : {};
 
-        const query = search ? {
-            $text : {
-                $search : search
-            }
-        } : {}
+    const skip = (page - 1) * limit;
 
-        const skip = ( page - 1) * limit
+    const [data, dataCount] = await Promise.all([
+      ProductModel.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("category subCategory"),
 
-        const [data,dataCount] = await Promise.all([
-            ProductModel.find(query).sort({ createdAt  : -1 }).skip(skip).limit(limit).populate('category subCategory'),
-            ProductModel.countDocuments(query)
-        ])
+      ProductModel.countDocuments(query),
+    ]);
 
-        return response.json({
-            message : "Product data",
-            error : false,
-            success : true,
-            data : data,
-            totalCount :dataCount,
-            totalPage : Math.ceil(dataCount/limit),
-            page : page,
-            limit : limit 
-        })
-
-
-    } catch (error) {
-        return response.status(500).json({
-            message : error.message || error,
-            error : true,
-            success : false
-        })
-    }
-}
+    return response.json({
+      message: "Product data",
+      error: false,
+      success: true,
+      data: data,
+      totalCount: dataCount,
+      totalPage: Math.ceil(dataCount / limit),
+      page,
+      limit,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
