@@ -264,21 +264,22 @@ export const deleteProductDetails = async(request,response)=>{
     }
 }
 
-// search product
 export const searchProduct = async (request, response) => {
   try {
-    let { searchText, page = 1, limit = 10 } = request.query;
+    let { searchText = "", page = 1, limit = 10 } = request.query;
 
     page = Number(page);
     limit = Number(limit);
 
     const query = searchText
       ? {
-          $text: {
-            $search: searchText,
-          },
+          publish: true,
+          $or: [
+            { name: { $regex: searchText, $options: "i" } },
+            { description: { $regex: searchText, $options: "i" } }
+          ],
         }
-      : {};
+      : { publish: true };
 
     const skip = (page - 1) * limit;
 
@@ -296,7 +297,7 @@ export const searchProduct = async (request, response) => {
       message: "Product data",
       error: false,
       success: true,
-      data: data,
+      data,
       totalCount: dataCount,
       totalPage: Math.ceil(dataCount / limit),
       page,
@@ -310,3 +311,4 @@ export const searchProduct = async (request, response) => {
     });
   }
 };
+
