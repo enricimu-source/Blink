@@ -56,7 +56,7 @@ export const createProductController = async(request,response)=>{
 export const getProductController = async(request,response)=>{
     try {
         
-        let { page, limit, search } = request.body 
+        let { page, limit, search} = request.body 
 
         if(!page){
             page = 1
@@ -107,6 +107,7 @@ export const getProductByCategory = async(request,response)=>{
                 success : false
             })
         }
+        console.log(id)
 
         const product = await ProductModel.find({ 
             category : { $in : id }
