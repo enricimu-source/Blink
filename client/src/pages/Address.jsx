@@ -20,7 +20,7 @@ const Address = () => {
   const handleDisableAddress = async(id)=>{
     try {
       const response = await Axios({
-        ...SummaryApi.disableAddress,
+        ...SummaryApi.deleteAddress,
         data : {
           _id : id
         }
