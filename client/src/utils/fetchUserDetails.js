@@ -1,15 +1,17 @@
-import Axios from "./Axios"
-import SummaryApi from "../common/SummaryApi"
+import Axios from './Axios';
+import SummaryApi from '../common/SummaryApi';
 
 const fetchUserDetails = async () => {
-    try {
-        const response = await Axios({
-            ...SummaryApi.userDetails
-        })
-        return response.data
-    } catch (error) {
-        return null
-    }
-}
+  try {
+    const response = await Axios({
+      ...SummaryApi.userDetails
+    });
 
-export default fetchUserDetails
+    return response.data;
+  } catch (error) {
+    console.log("Fetch user details error:", error);
+    throw error;
+  }
+};
+
+export default fetchUserDetails;

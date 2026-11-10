@@ -18,6 +18,11 @@ import CartMobileLink from './components/CartMobile';
 function App() {
   const dispatch = useDispatch()
   const location = useLocation()
+  console.log("API BASE URL:", import.meta.env.VITE_API_URL);
+
+console.log("User URL:", SummaryApi.userDetails.url);
+console.log("Category URL:", SummaryApi.getCategory.url);
+console.log("SubCategory URL:", SummaryApi.getSubCategory.url);
 
 
   const fetchUser = async () => {

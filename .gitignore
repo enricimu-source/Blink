@@ -1,8 +1,24 @@
+# Environment variables and secrets
 .env
-.node_modules
+.env.*
+**/.env
+**/.env.*
 
-client/node_modules
-server/node_modules
-.env
-.client/.env
-.server/.env
+# Allow example environment files
+!.env.example
+!**/.env.example
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build files
+dist/
+**/dist/
+
+# Logs
+*.log
+
+# Local system files
+.DS_Store
+Thumbs.db
